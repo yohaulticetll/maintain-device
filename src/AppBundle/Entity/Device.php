@@ -12,7 +12,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Entity
  * @ORM\Table(name="device")
- * @UniqueEntity("serial_no")
+ * @UniqueEntity("serialNo")
+ * @ORM\HasLifecycleCallbacks
  */
 class Device
 {
@@ -25,28 +26,29 @@ class Device
     private $id;
 
     /**
-     * @ORM\Column(name="serial_no", type="string", length=255, unique=true, nullable=false)
-     * @Assert\NotBlank
+     * @ORM\Column(name="serial_no", type="string", length=100, unique=true, nullable=false)
+     * @Assert\Regex("/^\w+$/")
+     * @Assert\Length(min=5,max=50)
      */
     private $serialNo;
 
     /**
      * @var
      *
-     * @ORM\Column(name="date_created", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime", nullable=false)
      */
     private $createdDate;
 
     /**
      * @var
      *
-     * @ORM\Column(name="date_modified", type="datetime")
+     * @ORM\Column(name="date_modified", type="datetime", nullable=true)
      */
     private $lastModifiedDate;
 
     /**
      * One device has many flags
-     * @ORM\OneToMany(targetEntity="Flag", mappedBy="device")
+     * @ORM\OneToMany(targetEntity="Flag", mappedBy="device", cascade={"persist", "remove"})
      */
     private $flags;
 
@@ -61,8 +63,8 @@ class Device
     }
 
     /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
      *
      * @throws \Exception
      */
@@ -135,7 +137,7 @@ class Device
      *
      * @return Device
      */
-    private function setLastModifiedDate($lastModifiedDate)
+    public function setLastModifiedDate($lastModifiedDate)
     {
         $this->lastModifiedDate = $lastModifiedDate;
 
@@ -159,10 +161,9 @@ class Device
      *
      * @return Device
      */
-    public function addFlag(\AppBundle\Entity\Flag $flag)
+    public function addFlag(Flag $flag)
     {
         $this->flags[] = $flag;
-
         return $this;
     }
 
@@ -173,7 +174,7 @@ class Device
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeFlag(\AppBundle\Entity\Flag $flag)
+    private function removeFlag(Flag $flag)
     {
         return $this->flags->removeElement($flag);
     }

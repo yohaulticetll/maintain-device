@@ -10,8 +10,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  *
  * @ORM\Entity
- * @ORM\Table(name="flag")
- * @UniqueEntity("name")
+ * @ORM\Table(name="flag",
+ *      uniqueConstraints={
+            @ORM\UniqueConstraint(name="name_device",columns={"name", "device_id"})
+ *     }
+ * )
+ * @UniqueEntity(fields={"name", "device"},
+ *     errorPath="device",
+ *      message="Flag already assigned to this device"
+ * )
+ * @ORM\HasLifecycleCallbacks
  */
 class Flag
 {
@@ -26,7 +34,7 @@ class Flag
     /**
      * @var
      *
-     * @ORM\Column(name="name", type="string", length=255, unique=true, nullable=false)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * @Assert\NotBlank
      */
     private $name;
@@ -41,7 +49,7 @@ class Flag
     /**
      * @var
      *
-     * @ORM\Column(name="creator_ip", type="integer")
+     * @ORM\Column(name="creator_ip", type="integer", options={"unsigned"=true})
      * @Assert\Ip
      */
     private $creatorIp;
@@ -126,8 +134,7 @@ class Flag
      */
     public function setCreatorIp($creatorIp)
     {
-        $this->creatorIp = ip2long($creatorIp);
-
+        $this->creatorIp = $creatorIp;
         return $this;
     }
 
@@ -138,7 +145,7 @@ class Flag
      */
     public function getCreatorIp()
     {
-        return long2ip($this->creatorIp);
+        return $this->creatorIp;
     }
 
     /**
@@ -148,7 +155,7 @@ class Flag
      *
      * @return Flag
      */
-    public function setDevice(\AppBundle\Entity\Device $device = null)
+    public function setDevice(Device $device = null)
     {
         $this->device = $device;
 
@@ -165,6 +172,22 @@ class Flag
         return $this->device;
     }
 
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function transformIp()
+    {
+        $this->setCreatorIp(ip2long($this->getCreatorIp()));
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function transformIpFromLong()
+    {
+        $this->setCreatorIp(long2ip($this->getCreatorIp()));
+    }
 
 
 }
