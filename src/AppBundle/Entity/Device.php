@@ -29,6 +29,7 @@ class Device
      * @ORM\Column(name="serial_no", type="string", length=100, unique=true, nullable=false)
      * @Assert\Regex("/^\w+$/")
      * @Assert\Length(min=5,max=50)
+     * @assert\NotBlank()
      */
     private $serialNo;
 

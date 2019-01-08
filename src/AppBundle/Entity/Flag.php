@@ -61,6 +61,10 @@ class Flag
      */
     private $device;
 
+    /**
+     * Flag constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
         $this->createdDate = new \DateTime();
