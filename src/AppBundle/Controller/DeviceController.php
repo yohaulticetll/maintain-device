@@ -69,9 +69,9 @@ class DeviceController extends AbstractFOSRestController
         }
 
         return $this->handleView($this->view([
-            'serial_number' => $device->getSerialNo(),
-            'date_created' => $device->getCreatedDate(),
-            'date_updated' => $device->getLastModifiedDate(),
+            'serialNumber' => $device->getSerialNo(),
+            'dateCreated' => $device->getCreatedDate(),
+            'dateUpdated' => $device->getLastModifiedDate(),
         ], Response::HTTP_OK));
 
     }
@@ -128,7 +128,7 @@ class DeviceController extends AbstractFOSRestController
             $manager->remove($device);
             $manager->flush();
 
-            return $this->handleView($this->view(sprintf("Device with ID: %d has been removed", $id), Response::HTTP_OK));
+            return $this->handleView($this->view(['message' => sprintf("Device with ID: %d has been removed", $id)], Response::HTTP_OK));
         }
 
         throw $this->createNotFoundException(sprintf("Resource with ID: %d not found", $id));
@@ -157,8 +157,8 @@ class DeviceController extends AbstractFOSRestController
             foreach ($flags as $flag) {
                 $view[] = [
                     'name' => $flag->getName(),
-                    'created_by' => $flag->getCreatorIp(),
-                    'created_date' => $flag->getCreatedDate(),
+                    'createdBy' => $flag->getCreatorIp(),
+                    'createdDate' => $flag->getCreatedDate(),
                 ];
             }
             return $this->handleView($this->view($view, Response::HTTP_OK));
@@ -189,7 +189,7 @@ class DeviceController extends AbstractFOSRestController
 
         if (empty($newFlag) || empty($serialNumber)) {
             return $this->handleView(
-                $this->view("POSTed data is missing required parameter(s)", Response::HTTP_BAD_REQUEST)
+                $this->view(['message' => "POSTed data is missing required parameter(s)"], Response::HTTP_BAD_REQUEST)
             );
         }
 
@@ -214,7 +214,7 @@ class DeviceController extends AbstractFOSRestController
         try {
             $flagValidator->flagIsValid((string)$newFlag, $lastFlag);
         } catch (FlagNotValidException $e) {
-            return $this->handleView($this->view($e->getMessage(), Response::HTTP_BAD_REQUEST));
+            return $this->handleView($this->view(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST));
         }
 
         $flag = new Flag();
@@ -238,8 +238,8 @@ class DeviceController extends AbstractFOSRestController
         $manager->persist($device);
         $manager->flush();
 
-        return $this->handleView($this->view(
-            sprintf("Flag: %s has been added for device S/N: %s", $newFlag, $serialNumber),
+        return $this->handleView($this->view(['message' =>
+            sprintf("Flag: %s has been added for device S/N: %s", $newFlag, $serialNumber)],
             Response::HTTP_CREATED
         ));
 
