@@ -64,10 +64,17 @@ fos_rest:
         default_format: json
     format_listener:
         rules:
-            - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
+            - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: true }
     param_fetcher_listener: true
     view:
         view_response_listener: 'force'
         formats:
             json: true
     disable_csrf_role: true
+    exception:
+        exception_controller: 'fos_rest.exception.controller:showAction'
+        codes:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': HTTP_NOT_FOUND
+            'Doctrine\ORM\OptimisticLockException': HTTP_CONFLICT
+        messages:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': true
