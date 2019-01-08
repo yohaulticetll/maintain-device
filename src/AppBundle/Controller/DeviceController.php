@@ -14,9 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Class DeviceController
+ * @package AppBundle\Controller
+ */
 class DeviceController extends AbstractFOSRestController
 {
+
     /**
+     * Show all devices
+     *
      * @Methods\Get("/devices")
      */
     public function getDevicesAction()
@@ -25,25 +32,27 @@ class DeviceController extends AbstractFOSRestController
         $repo = $this->getDoctrine()->getRepository(Device::class);
         $data = $repo->findAll();
 
-        $view = [];
+        $viewData = [];
         /**
          * @var Device $d
          */
         foreach ($data as $d) {
-            $view[] = [
+            $viewData[] = [
                 'serial_number' => $d->getSerialNo(),
                 'date_created' => $d->getCreatedDate(),
                 'date_updated' => $d->getLastModifiedDate()
             ];
         }
 
-        $view = $this->view($view, Response::HTTP_OK);
+        $view = $this->view($viewData, Response::HTTP_OK);
 
         return $this->handleView($view);
 
     }
 
     /**
+     * Show specific device
+     *
      * @Methods\Get("/devices/{id}")
      *
      * @param $id
@@ -54,6 +63,7 @@ class DeviceController extends AbstractFOSRestController
 
         $repo = $this->getDoctrine()->getRepository(Device::class);
         $device = $repo->find($id);
+
         if (null === $device) {
             throw $this->createNotFoundException(sprintf("Resource with ID: %d not found", $id));
         }
@@ -63,9 +73,12 @@ class DeviceController extends AbstractFOSRestController
             'date_created' => $device->getCreatedDate(),
             'date_updated' => $device->getLastModifiedDate(),
         ], Response::HTTP_OK));
+
     }
 
     /**
+     * Create a device
+     *
      * @Methods\Post("/devices")
      *
      * @param Request $request
@@ -97,6 +110,8 @@ class DeviceController extends AbstractFOSRestController
     }
 
     /**
+     * Delete specific device along with associated flags
+     *
      * @Methods\Delete("devices/{id}")
      *
      * @param $id
@@ -121,12 +136,14 @@ class DeviceController extends AbstractFOSRestController
     }
 
     /**
+     * Show flags associated for device
+     *
      * @Methods\Get("/devices/{id}/flags")
      *
      * @param $id
      * @return Response
      */
-    public function showFlagAction($id)
+    public function getFlagAction($id)
     {
 
         /**
@@ -152,6 +169,8 @@ class DeviceController extends AbstractFOSRestController
     }
 
     /**
+     * Add flag for a device
+     *
      * @Methods\Post("/flags")
      *
      * @param Request $request
@@ -221,7 +240,7 @@ class DeviceController extends AbstractFOSRestController
 
         return $this->handleView($this->view(
             sprintf("Flag: %s has been added for device S/N: %s", $newFlag, $serialNumber),
-            Response::HTTP_OK
+            Response::HTTP_CREATED
         ));
 
     }
@@ -240,4 +259,5 @@ class DeviceController extends AbstractFOSRestController
         }
         return $messages;
     }
+
 }
