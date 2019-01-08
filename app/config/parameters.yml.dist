@@ -4,12 +4,12 @@
 parameters:
     database_host: 127.0.0.1
     database_port: ~
-    database_name: symfony
+    database_name: maintain_device
     database_user: root
     database_password: ~
 
     #database used for tests
-    tests_database_dbname: symfony_test
+    tests_database_dbname: maintain_device_test
 
     # You should uncomment this if you want to use pdo_sqlite
     #database_path: '%kernel.project_dir%/var/data/data.sqlite'
