@@ -1,72 +1,122 @@
-Symfony Standard Edition
+PS/Maintain Device
 ========================
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony
-application that you can use as the skeleton for your new applications.
+Simple REST API allowing to flag devices according to current processing state. Will accept JSON and return
 
-For details on how to download and get started with Symfony, see the
-[Installation][1] chapter of the Symfony Documentation.
+# Installation
+```
+git clone https://github.com/yohaulticetll/maintain-device.git
+cd maintain-device/
+composer update
+```
+## Running Tests
 
-What's inside?
---------------
+```
+composer test
+```
 
-The Symfony Standard Edition is configured with the following defaults:
+## Endpoints
 
-  * An AppBundle you can use to start coding;
+***Add Device***
 
-  * Twig as the only configured template engine;
+  Creates a device
 
-  * Doctrine ORM/DBAL;
+* **URL**
 
-  * Swiftmailer;
+  /api/devices
 
-  * Annotations enabled for everything.
+* **Method:**
 
-It comes pre-configured with the following bundles:
+  `POST` 
 
-  * **FrameworkBundle** - The core Symfony framework bundle
+* **Data Params**
 
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
+  **Required:** `{"serialNumber":"SN560"}`
 
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
+* **Success Response:**
 
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
+  * **Code:** 201 <br />
+    **Content:** `{"id": 12,"serialNo": "SN560","createdDate": "2019-01-08T05:14:08-05:00",...}`
+ 
+* **Error Response:**
 
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"serialNo": ["This value is already used."]}`
+    
+***Get Devices***
 
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
+  Show all devices
 
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
+* **URL**
 
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
+  /api/devices
 
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
+* **Method:**
 
-  * [**SensioGeneratorBundle**][13] (in dev env) - Adds code generation
-    capabilities
+  `GET` 
 
-  * [**WebServerBundle**][14] (in dev env) - Adds commands for running applications
-    using the PHP built-in web server
+* **Data Params**
 
-  * **DebugBundle** (in dev/test env) - Adds Debug and VarDumper component
-    integration
+  NONE
 
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
+* **Success Response:**
 
-Enjoy!
+  * **Code:** 200 <br />
+    **Content:** `[{"serialNumber":"SN123"},{"serialNumber":...}]`
 
-[1]:  https://symfony.com/doc/3.4/setup.html
-[6]:  https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  https://symfony.com/doc/3.4/doctrine.html
-[8]:  https://symfony.com/doc/3.4/templating.html
-[9]:  https://symfony.com/doc/3.4/security.html
-[10]: https://symfony.com/doc/3.4/email.html
-[11]: https://symfony.com/doc/3.4/logging.html
-[13]: https://symfony.com/doc/current/bundles/SensioGeneratorBundle/index.html
-[14]: https://symfony.com/doc/current/setup/built_in_web_server.html
+  
+***Add Flag***
+
+  Add flag to the device
+
+* **URL**
+
+  /api/flags
+
+* **Method:**
+
+  `POST` 
+
+* **Data Params**
+
+  **Required:** `{"serialNumber":"SN560","flag":"dekompletacja_rozpakowywanie"}`
+
+* **Success Response:**
+
+  * **Code:** 201 <br />
+    **Content:** `{"message": "Flag: dekompletacja_rozpakowywanie has been added for device S\/N: 40011"}`
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"error": "Attempt to assign not existing or not allowed flag"}`
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{"message": "Device with S\/N: 123123123213213 doesn't exist"}`
+  
+***Get Device Flags***
+
+  Show flags for a device
+
+* **URL**
+
+  /api/devices/[id]/flags
+
+* **Method:**
+
+  `GET` 
+
+* **Data Params**
+
+  NONE
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `[{"name": "dekompletacja_rozpakowywanie","createdBy": "192.168.56.1","createdDate": "2019-01-08T05:19:58-05:00"},
+    {"name": "testowanie_uszkodzony","createdBy": "192.168.56.1","createdDate": "2019-01-08T05:25:04-05:00"}]`
+ 
+* **Error Response:**
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{"code": 404,"message": "No device with ID: 113 found"}`
+
