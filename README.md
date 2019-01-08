@@ -1,7 +1,7 @@
 PS/Maintain Device
 ========================
 
-Simple REST API allowing to flag devices according to current processing state. Will accept JSON and return
+Simple REST API allowing to flag devices according to current processing state.
 
 # Installation
 ```
